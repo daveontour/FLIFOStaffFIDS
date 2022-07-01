@@ -4,6 +4,8 @@ public interface IClientStateController
 {
     public event Action OnFlightsUpdated;
 
+    public event Action OnNoFlightsUpdated;
+
     public event Action OnTerminalUpdated;
 
     public event Action OnRulesUpdated;
@@ -16,6 +18,7 @@ public interface IClientStateController
     public string SelectedTerminal { get; set; }
     public bool ApplyRollOffRules { get; set; }
     public int PagerLength { get; set; }
+    public bool ShowTerminal { get; set; }
 
     public bool StateControllerReady();
 
@@ -36,6 +39,8 @@ public interface IClientStateController
     public void NotifyUpdateTerminal();
 
     public void NotifyUpdateFlights();
+
+    public void NotifyNoUpdateFlights();
 
     public void NotifyUpdateRules();
 

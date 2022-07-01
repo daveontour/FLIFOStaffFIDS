@@ -8,6 +8,7 @@
     protected override void OnInitialized()
     {
         stateController.OnFlightsUpdated += FlightsUpdated;
+        stateController.OnNoFlightsUpdated += FlightsUpdated;
     }
 
     public string LastUpdated
@@ -26,5 +27,7 @@
     public void Dispose()
     {
         stateController.OnFlightsUpdated -= FlightsUpdated;
+        stateController.OnNoFlightsUpdated -= FlightsUpdated;
+    }
     }
 }

@@ -100,16 +100,21 @@ public class FlightStatusService : BackgroundService
             arrLogger.Info("Checking for Arrival Updates");
             airport.ArrivalLastUpdate = DateTime.Now;
             List<Flight> updatedArrivalflights = UpdateFromFLIFO("A", airport);
-            if (updatedArrivalflights != null) OnServerFlightsUpdates?.Invoke();
+            if (updatedArrivalflights != null && updatedArrivalflights.Count() > 0) OnServerFlightsUpdates?.Invoke();
 
             depLogger.Info("Checking for Departure Updates");
             airport.DepartureLastUpdate = DateTime.Now;
             List<Flight> updatedDepartureflights = UpdateFromFLIFO("D", airport);
 
-            //Send Changes to all the clients
-            if (updatedDepartureflights != null) OnServerFlightsUpdates?.Invoke();
+            if (updatedDepartureflights != null && updatedDepartureflights.Count() > 0) OnServerFlightsUpdates?.Invoke();
 
             if (updatedDepartureflights == null && updatedArrivalflights == null) OnServerNoFlightsUpdates?.Invoke();
+
+            if (updatedDepartureflights != null &&
+                updatedArrivalflights != null &&
+                updatedArrivalflights.Count() == 0 &&
+                updatedDepartureflights.Count() == 0
+                ) OnServerNoFlightsUpdates?.Invoke();
         }
     }
 

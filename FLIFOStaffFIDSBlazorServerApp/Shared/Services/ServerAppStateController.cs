@@ -3,13 +3,14 @@ using System.Xml;
 
 namespace FLIFOStaffFIDSBlazorServerApp.Shared.Services;
 
-public class ServerAppStateController : IClientStateController
+public class ServerAppStateController : IClientStateController, IDisposable
 {
     private DataAccessService dao;
 
     public ServerAppStateController(DataAccessService dao)
     {
         FlightStatusService.OnServerFlightsUpdates += ServerFlightsUpdated;
+        FlightStatusService.OnServerNoFlightsUpdates += ServerNoFlightsUpdated;
         this.dao = dao;
         Rules = GetRules();
     }
@@ -22,13 +23,22 @@ public class ServerAppStateController : IClientStateController
         NotifyUpdateFlights();
     }
 
+    private void ServerNoFlightsUpdated()
+    {
+        LastUpdated = DateTime.Now;
+        NotifyNoUpdateFlights();
+    }
+
     private DateTime _lastUpdate;
     public DateTime LastUpdated { get => _lastUpdate; set => _lastUpdate = value; }
     public string SelectedTerminal { get; set; } = "all";
     public bool ApplyRollOffRules { get; set; } = true;
     public int PagerLength { get; set; } = 1;
+    public bool ShowTerminal { get; set; } = true;
 
     public event Action? OnFlightsUpdated;
+
+    public event Action? OnNoFlightsUpdated;
 
     public event Action? OnTerminalUpdated;
 
@@ -83,6 +93,14 @@ public class ServerAppStateController : IClientStateController
         XmlNode node = doc.SelectSingleNode(".//metadata");
 
         meta.AirportName = node?.Attributes?["airportName"]?.Value;
+        try
+        {
+            meta.ShowTerminal = bool.Parse(node?.Attributes?["showTerminal"]?.Value);
+        }
+        catch (Exception)
+        {
+            meta.ShowTerminal = true;
+        }
 
         return Task.FromResult(meta);
     }
@@ -123,6 +141,10 @@ public class ServerAppStateController : IClientStateController
                 Type = node.Attributes?["type"]?.Value,
                 Enabled = bool.Parse(node.Attributes?["enabled"]?.Value)
             };
+            if (!v.Enabled)
+            {
+                continue;
+            }
             try
             {
                 foreach (XmlNode n in node.SelectNodes("./field"))
@@ -160,6 +182,11 @@ public class ServerAppStateController : IClientStateController
     public void NotifyUpdateFlights()
     {
         OnFlightsUpdated?.Invoke();
+    }
+
+    public void NotifyNoUpdateFlights()
+    {
+        OnNoFlightsUpdated?.Invoke();
     }
 
     public void NotifyUpdateRules()
@@ -206,5 +233,11 @@ public class ServerAppStateController : IClientStateController
         }
 
         return flsRtn;
+    }
+
+    public void Dispose()
+    {
+        FlightStatusService.OnServerFlightsUpdates -= ServerFlightsUpdated;
+        FlightStatusService.OnServerNoFlightsUpdates -= ServerNoFlightsUpdated;
     }
 }

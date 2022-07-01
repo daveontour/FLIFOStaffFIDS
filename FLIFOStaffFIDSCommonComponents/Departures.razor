@@ -13,7 +13,7 @@
 else
 {
     <div class="departures">
-        <RadzenDataGrid  @ref=dataGrid IsLoading="@isLoading" Data="@flights" Count="@count" Style="height:calc(100vh - 50px)" AllowFiltering="true" AllowColumnResize="true" FilterMode="FilterMode.Advanced" AllowSorting="true" PageSize=@RowsPerPage AllowPaging="true" PagerHorizontalAlign="HorizontalAlign.Left" ShowPagingSummary="true"
+        <RadzenDataGrid  @ref=dataGrid  Data="@flights" Count="@count" Style="height:calc(100vh - 50px)" AllowFiltering="true" AllowColumnResize="true" FilterMode="FilterMode.Advanced" AllowSorting="true" PageSize=@RowsPerPage AllowPaging="true" PagerHorizontalAlign="HorizontalAlign.Left" ShowPagingSummary="true"
                     LogicalFilterOperator="LogicalFilterOperator.Or" TItem="Flight" ColumnWidth="300px">
             <Columns>
                 <RadzenDataGridColumn TItem="Flight" Property="SchedDate" Title="Time" Frozen="true" Width="130px">
@@ -21,7 +21,7 @@ else
                         @context.SchedDate @context.SchedTimeShort
                     </Template>
                 </RadzenDataGridColumn>
-                @if (MultiTerminal)
+                @if (MultiTerminal || stateController.ShowTerminal)
                 {
                     <RadzenDataGridColumn TItem="Flight" Property="DepTerminal" Title="Term." Frozen="true" Width="80px" />
                 }
@@ -103,53 +103,10 @@ else
 }
 @code {
 
-    protected override void OnInitialized()
+    public override async Task LoadData()
     {
-        stateController.OnFlightsUpdated += UpdateGrid;
-        stateController.OnTerminalUpdated += UpdateTerminal;
-        stateController.OnPageChange += PageChange;
-        SetPagerTask();
-    }
-    public async void PageChange()
-    {
-        await InvokeAsync(() =>
-        {
-            StateHasChanged();
-        });
-    }
-    protected override async Task OnAfterRenderAsync(bool firstRender)
-    {
-        if (firstRender)
-        {
-            await LoadData();
-        }
-        stateController.OnPagerLengthChange += SetPagerTask;
-    }
-    public async void UpdateGrid()
-    {
-        await LoadData();
-    }
-    public async void UpdateTerminal()
-    {
-        await LoadData();
-    }
-    public void Dispose()
-    {
-        stateController.OnFlightsUpdated -= UpdateGrid;
-        stateController.OnTerminalUpdated -= UpdateTerminal;
-        stateController.OnPageChange -= PageChange;
-        if (pageTimer != null)
-        {
-            pageTimer.Enabled = false;
-        }
-    }
-
-    public async Task LoadData()
-    {
-        isLoading = true;
         flights = await stateController.GetDepFlights();
         count = flights.Count();
-        isLoading = false;
 
         await InvokeAsync(() =>
         {

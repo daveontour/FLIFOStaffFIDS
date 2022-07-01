@@ -22,17 +22,29 @@ else
 {
     <div style="height:100vh;display:grid;grid-template-rows:50px auto;">
         <div style="justify-content:space-between;width:100%;display:flex;">
-            <div style="height:50px;display:flex;flex-direction:column;margin-left:5px;">
-                <h2>@GetTitle()</h2>
-                <LastUpdateComponent />
+            <div style="height:50px;display:flex;flex-direction:row;margin-left:5px;">
+                <div style="display:inline-flex;flex-direction:column;margin-right:15px;">
+                    <h2 style="margin-right:25px">@GlobalMetaData.AirportName</h2>
+                    <LastUpdateComponent />
+                </div>
+                <div style="display:inline-flex;flex-direction:row">
+                    <h1 style="margin-right:15px;font-weight:200">@GetTerminalName()</h1>
+                    <h1 style="color:goldenrod">@GetViewName()</h1>
+                </div>
             </div>
 
             <div style="display:inline-flex;flex-direction:row-reverse;column-gap:5px;line-height:50px;text-align: center;">
-                <RadzenDropDown Style="width:180px;height:30px;font-size:12pt;margin-right:5px;margin-top:10px" TValue="string" Placeholder="Select View..." Data=@Views TextProperty="Name" ValueProperty="Identifier" Value=@SelectedView Change=@(args => OnViewDropDownChange(args)) />
-                <RadzenDropDown Style="width:180px;height:30px;font-size:12pt;margin-right:5px;margin-top:10px" TValue="string" Placeholder="Select Terminal..." Data=@Terminals TextProperty="Name" ValueProperty="Identifier" Value=@SelectedTerminal Change=@(args => OnTerminalDropDownChange(args)) />
+                @if (Views.Count() > 1)
+                {
+                    <RadzenDropDown Style="width:180px;height:30px;font-size:12pt;margin-right:5px;margin-top:10px" TValue="string" Placeholder="Select View..." Data=@Views TextProperty="Name" ValueProperty="Identifier" Value=@SelectedView Change=@(args => OnViewDropDownChange(args)) />
+                }
+                @if (MultiTerminal)
+                {
+                    <RadzenDropDown Style="width:180px;height:30px;font-size:12pt;margin-right:5px;margin-top:10px" TValue="string" Placeholder="Select Terminal..." Data=@Terminals TextProperty="Name" ValueProperty="Identifier" Value=@SelectedTerminal Change=@(args => OnTerminalDropDownChange(args)) />
+                }
                 <RadzenNumeric Style="width:60px;height:30px;line-height:30px;font-size:12pt;;margin-top:10px;margin-right:5px" Min="5" Max="50" @bind-Value=@RowPerPage Change="(int args) => PageChanged()" />
                 <label style="height:50px;line-height:50px;font-size:12pt;margin-right:2px">Rows per Page:</label>
-                 <RadzenNumeric Style="width:60px;height:30px;line-height:30px;font-size:12pt;;margin-top:10px;margin-right:5px" Min="0" Max="5" @bind-Value=@stateController.PagerLength Change="(int args) => PagerLengthChanged()" />
+                <RadzenNumeric Style="width:60px;height:30px;line-height:30px;font-size:12pt;;margin-top:10px;margin-right:5px" Min="0" Max="5" @bind-Value=@stateController.PagerLength Change="(int args) => PagerLengthChanged()" />
                 <label style="height:50px;line-height:50px;font-size:12pt;margin-right:2px">Auto Page:</label>
                 <RadzenCheckBox Style="height:30px;width:30px;line-height:50px;margin-right:5px;margin-top:10px" @bind-Value=stateController.ApplyRollOffRules Change="(bool args) => RuleChanged()" />
                 <label style="height:50px;line-height:50px;font-size:12pt;margin-right:5px">Apply Rolloff Rules</label>
@@ -83,6 +95,8 @@ else
     protected override async Task OnInitializedAsync()
     {
         stateController.OnFlightsUpdated += FlightsUpdated;
+
+
         Terminals = await stateController.GetTerminals();
         if (Terminals.Count > 1)
         {
@@ -95,21 +109,49 @@ else
         Views = await stateController.GetViews();
         SelectedView = SelectedView ?? "arrdep";
 
-        foreach (View v in Views)
+        if (Views.Count() > 1)
         {
+            foreach (View v in Views)
+            {
+                if (SelectedView == v.Identifier)
+                {
+                    SelectedViewDefn = v;
+                    if (v.Type == "arrival") SelectedBaseView = "arr";
+                    if (v.Type == "departure") SelectedBaseView = "dep";
+                    if (v.Type == "combo") SelectedBaseView = "arrdep";
+                    break;
+                }
+            }
+        }
+        else if (Views.Count() == 1)
+        {
+            View v = Views.ElementAt<View>(0);
             if (SelectedView == v.Identifier)
             {
                 SelectedViewDefn = v;
                 if (v.Type == "arrival") SelectedBaseView = "arr";
                 if (v.Type == "departure") SelectedBaseView = "dep";
                 if (v.Type == "combo") SelectedBaseView = "arrdep";
-                break;
+
             }
         }
+        else
+        {
+            View v = new View()
+                {
+                    Name = "Arrivals and Departures",
+                    Identifier = "arrdep",
+                    Type = "combo"
+                };
+            SelectedViewDefn = v;
+            SelectedBaseView = "arrdep";
+        }
+
         SelectedBaseView = SelectedBaseView ?? "arrdep";
         SelectedTerminal = SelectedTerminal ?? "all";
         stateController.SelectedTerminal = SelectedTerminal;
         GlobalMetaData = await stateController.GetMetaData();
+        stateController.ShowTerminal = GlobalMetaData.ShowTerminal;
         await stateController.GetAllFlights();
     }
     public async void FlightsUpdated()
@@ -119,7 +161,13 @@ else
             StateHasChanged();
         });
     }
-
+    public async void NoFlightsUpdated()
+    {
+        await InvokeAsync(() =>
+        {
+            StateHasChanged();
+        });
+    }
 
     public void RuleChanged()
     {

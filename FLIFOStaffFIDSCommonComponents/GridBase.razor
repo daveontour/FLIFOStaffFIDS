@@ -19,9 +19,61 @@
     protected System.Timers.Timer pageTimer;
 
     public int showPage = 0;
-    public bool isLoading { get; set; }
     public int count { get; set; }
     public IEnumerable<Flight> flights { get; set; } = new List<Flight>();
+
+    protected override void OnInitialized()
+    {
+        stateController.OnFlightsUpdated += UpdateGrid;
+        stateController.OnPageChange += PageChange;
+        stateController.OnTerminalUpdated += UpdateTerminal;
+        SetPagerTask();
+    }
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            await LoadData();
+        }
+        stateController.OnPagerLengthChange += SetPagerTask;
+    }
+    public async void UpdateGrid()
+    {
+        await LoadData();
+    }
+    public async void UpdateTerminal()
+    {
+        await LoadData();
+    }
+    public void Dispose()
+    {
+        stateController.OnFlightsUpdated -= UpdateGrid;
+        stateController.OnTerminalUpdated -= UpdateTerminal;
+        stateController.OnPageChange -= PageChange;
+        if (pageTimer != null)
+        {
+            pageTimer.Enabled = false;
+        }
+    }
+    public async void PageChange()
+    {
+        await InvokeAsync(() =>
+        {
+            StateHasChanged();
+        });
+    }
+    public async virtual Task LoadData()
+    {
+
+        flights = await stateController.GetAllFlights();
+        count = flights.Count();
+
+        await InvokeAsync(() =>
+        {
+            StateHasChanged();
+        });
+
+    }
 
     public void SetPagerTask()
     {
