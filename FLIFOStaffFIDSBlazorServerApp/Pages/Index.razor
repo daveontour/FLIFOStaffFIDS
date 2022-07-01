@@ -1,0 +1,186 @@
+﻿@page "/{selectedView?}/{selectedTerminal?}"
+@using FLIFOStaffFIDSCommon;
+@using Radzen.Blazor;
+@using Radzen;
+@using System.Linq;
+@using FLIFOStaffFIDSCommonComponents;
+
+
+@inject IClientStateController stateController;
+
+@implements IDisposable;
+
+<PageTitle>FLIFO Staff FIDS</PageTitle>
+
+@if (Terminals == null || Views == null)
+{
+    <div class="loader">
+        <div class="content"><img src="./images/loading-buffering.gif" style="width:50px;height:50px;margin-right:15px" />Initialising Staff FIDS</div>
+    </div>
+}
+else
+{
+    <div style="height:100vh;display:grid;grid-template-rows:50px auto;">
+        <div style="justify-content:space-between;width:100%;display:flex;">
+            <div style="height:50px;display:flex;flex-direction:column;margin-left:5px;">
+                <h2>@GetTitle()</h2>
+                <LastUpdateComponent />
+            </div>
+
+            <div style="display:inline-flex;flex-direction:row-reverse;column-gap:5px;line-height:50px;text-align: center;">
+                <RadzenDropDown Style="width:180px;height:30px;font-size:12pt;margin-right:5px;margin-top:10px" TValue="string" Placeholder="Select View..." Data=@Views TextProperty="Name" ValueProperty="Identifier" Value=@SelectedView Change=@(args => OnViewDropDownChange(args)) />
+                <RadzenDropDown Style="width:180px;height:30px;font-size:12pt;margin-right:5px;margin-top:10px" TValue="string" Placeholder="Select Terminal..." Data=@Terminals TextProperty="Name" ValueProperty="Identifier" Value=@SelectedTerminal Change=@(args => OnTerminalDropDownChange(args)) />
+                <RadzenNumeric Style="width:60px;height:30px;line-height:30px;font-size:12pt;;margin-top:10px;margin-right:5px" Min="5" Max="50" @bind-Value=@RowPerPage Change="(int args) => PageChanged()" />
+                <label style="height:50px;line-height:50px;font-size:12pt;margin-right:2px">Rows per Page:</label>
+                <RadzenCheckBox Style="height:30px;width:30px;line-height:50px;margin-right:5px;margin-top:10px" Change="(bool args) => RuleChanged()" />
+                <label style="height:50px;line-height:50px;font-size:12pt;margin-right:5px">Apply Rolloff Rules</label>
+
+            </div>
+        </div>
+        <div style="grid-row:2;height:calc(100vh - 50px)">
+            @if (SelectedBaseView == "arrdep")
+            {
+                <Combined MultiTerminal=@MultiTerminal RowsPerPage=@RowPerPage View=@SelectedViewDefn />
+            }
+            @if (SelectedBaseView == "arr")
+            {
+                <Arrivals MultiTerminal=@MultiTerminal RowsPerPage=@RowPerPage View=@SelectedViewDefn />
+            }
+            @if (SelectedBaseView == "dep")
+            {
+                <Departures MultiTerminal=@MultiTerminal RowsPerPage=@RowPerPage View=@SelectedViewDefn />
+            }
+        </div>
+    </div>
+}
+
+@code {
+    [Parameter]
+    public bool ApplyRules { get; set; } = false;
+    [Parameter]
+    public bool MultiTerminal { get; set; } = false;
+    [Parameter]
+    public string SelectedTerminal { get; set; } = "all";
+    [Parameter]
+    public string SelectedView { get; set; } = "arrdep";
+    public string SelectedBaseView { get; set; }
+    public View SelectedViewDefn { get; set; }
+
+    public MetaData GlobalMetaData { get; set; }
+    public int RowPerPage { get; set; } = 20;
+    public List<View> Views { get; set; }
+    public List<Terminal> Terminals { get; set; }
+
+    public string LastUpdated
+    {
+        get
+        {
+            return $"Last Update {stateController.LastUpdated.ToString("HH:mm:ss")}";
+        }
+    }
+    protected override async Task OnInitializedAsync()
+    {
+        stateController.OnFlightsUpdated += FlightsUpdated;
+        Terminals = await stateController.GetTerminals();
+        if (Terminals.Count > 1)
+        {
+            MultiTerminal = true;
+        }
+        else
+        {
+            MultiTerminal = false;
+        }
+        Views = await stateController.GetViews();
+        SelectedView = SelectedView ?? "arrdep";
+
+        foreach (View v in Views)
+        {
+            if (SelectedView == v.Identifier)
+            {
+                SelectedViewDefn = v;
+                if (v.Type == "arrival") SelectedBaseView = "arr";
+                if (v.Type == "departure") SelectedBaseView = "dep";
+                if (v.Type == "combo") SelectedBaseView = "arrdep";
+                break;
+            }
+        }
+        SelectedBaseView = SelectedBaseView ?? "arrdep";
+        SelectedTerminal = SelectedTerminal ?? "all";
+        stateController.SelectedTerminal = SelectedTerminal;
+        GlobalMetaData = await stateController.GetMetaData();
+        await stateController.GetAllFlights();
+    }
+    public async void FlightsUpdated()
+    {
+        await InvokeAsync(() =>
+        {
+            StateHasChanged();
+        });
+    }
+
+
+    public async void RuleChanged()
+    {
+        //await stateController.GetFlights();
+        stateController.NotifyUpdateFlights();
+    }
+    public void PageChanged()
+    {
+        StateHasChanged();
+    }
+    public string GetViewName()
+    {
+        foreach (var item in Views)
+        {
+            if (item.Identifier == SelectedView)
+            {
+                return item.Name;
+            }
+        }
+        return "";
+    }
+    public string GetTerminalName()
+    {
+        foreach (var item in Terminals)
+        {
+            if (item.Identifier == SelectedTerminal)
+            {
+                return item.Name;
+            }
+        }
+        return "";
+    }
+
+    private string GetTitle()
+    {
+        return $"{GlobalMetaData.AirportName} {GetTerminalName()} - {GetViewName()}";
+    }
+
+    public void OnTerminalDropDownChange(object args)
+    {
+        SelectedTerminal = (string)args;
+        stateController.SelectedTerminal = SelectedTerminal;
+        stateController.NotifyUpdateTerminal();
+    }
+    public void OnViewDropDownChange(object args)
+    {
+        SelectedView = (string)args;
+        foreach (View v in Views)
+        {
+            if (SelectedView == v.Identifier)
+            {
+                SelectedViewDefn = v;
+                if (v.Type == "arrival") SelectedBaseView = "arr";
+                if (v.Type == "departure") SelectedBaseView = "dep";
+                if (v.Type == "combo") SelectedBaseView = "arrdep";
+                break;
+            }
+        }
+        StateHasChanged();
+    }
+
+    public void Dispose()
+    {
+        stateController.OnFlightsUpdated -= FlightsUpdated;
+    }
+}

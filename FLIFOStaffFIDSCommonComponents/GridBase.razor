@@ -1,0 +1,24 @@
+﻿
+@using FLIFOStaffFIDSCommon
+@using Radzen.Blazor;
+@using Radzen;
+@using System.Linq;
+@inject IClientStateController stateController;
+
+@code {
+    [Parameter]
+    public bool ApplyRules { get; set; } = false;
+    [Parameter]
+    public View? View { get; set; }
+    [Parameter]
+    public bool MultiTerminal { get; set; } = false;
+    [Parameter]
+    public int RowsPerPage { get; set; } = 20;
+
+    public bool isLoading { get; set; }
+    public int count { get; set; }
+    public IEnumerable<Flight> flights { get; set; } = new List<Flight>();
+
+
+
+}

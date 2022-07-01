@@ -1,0 +1,185 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<config>
+
+	<airport FlifoAptCode="LHR" FlifoKey="SZpvZxtHHeyo3mwhmsGhMKcZGLtEnRG2" />
+	<metadata airportName="London Heathrow" />
+
+	<!-- The URL to get the initial oad of the flights. Place holders are included -->
+	<InitURL>https://flifo-qa.api.aero/flifo/flightinfo/v1/flights/airport/{0}/direction/{1}?pastWindow=6&amp;futureWindow=12&amp;searchByUTC=true&amp;showCargo=false&amp;groupMarketingCarriers=true&amp;view=full</InitURL>
+
+	<!-- The URL to get the initial oad of the flights. Place holders are included -->
+	<UpdateURL>https://flifo-qa.api.aero/flifo/flightinfo/v1/flights/updates/airport/{0}?from={2}&amp;to={3}&amp;showCargo=false&amp;direction={1}&amp;view=full</UpdateURL>
+
+	<!--== Whether to do intermittent updates between LOAD requests -->
+	<EnableUpdates>True</EnableUpdates>
+
+	<!-- The time in seconds between UPDATE API calls to FLIFO -->
+	<UpdateInterval>30</UpdateInterval>
+
+	<!-- The time in MINUTES between LOAD API calls to FLIFO -->
+	<LoadInterval>60</LoadInterval>
+
+	<!-- Use Test Data instad of the API -->
+	<Test>True</Test>
+	<TestDepartures>TestData\lhrd.json</TestDepartures>
+	<TestArrivals>TestData\lhra.json</TestArrivals>
+	<TestDeparturesUpdates>TestData\lhrdUpdates.json</TestDeparturesUpdates>
+	<TestArrivalsUpdates>TestData\lhraUpdates.json</TestArrivalsUpdates>
+
+	<propertyMappings>
+
+		<!--
+	The "jpath" attribute is the JSON Path of the the data in the JSON
+	returned from the FLIFO request, relative to the individual flight entry
+
+	The "property" attribute is name of the variable used in the definition of the dispaly
+	-->
+		<propertyMapping jpath=".flightIdentifier.operatingCarrier.iataCode" property="OpAirlineCode" />
+		<propertyMapping jpath=".flightIdentifier.operatingCarrier.flightNumber" property="FlightNumber" />
+		<propertyMapping jpath=".flightIdentifier.operatingCarrier.name" property="OpAirlineName" />
+		<propertyMapping jpath=".flightIdentifier.aircraft.registration" property="AircraftRegistration" />
+		<propertyMapping jpath=".flightIdentifier.aircraft.iataCode" property="AircraftTypeCode" />
+		<propertyMapping jpath=".flightIdentifier.aircraft.model" property="AircraftModel" />
+		<propertyMapping jpath=".duration" property="FltDuration" />
+		<propertyMapping jpath=".serviceType" property="ServiceType" />
+
+		<propertyMapping jpath=".arrival.airport.iataCode" property="ArrRoute" />
+		<propertyMapping jpath=".arrival.airport.cityText" property="ArrRouteCity" />
+		<propertyMapping jpath=".arrival.events.ALDT" property="ALDT" />
+		<propertyMapping jpath=".arrival.events.AIBT" property="AIBT" />
+		<propertyMapping jpath=".arrival.events.EIBT" property="EIBT" />
+		<propertyMapping jpath=".arrival.gate" property="ArrGate" />
+		<propertyMapping jpath=".arrival.statusText" property="ArrStatus" />
+		<propertyMapping jpath=".arrival.carousel" property="ArrCarousel" />
+		<propertyMapping jpath=".arrival.terminal" property="ArrTerminal" />
+		<propertyMapping jpath=".arrival.scheduled" property="ArrSTODateTime" />
+		<propertyMapping jpath=".arrival.estimated" property="ArrETADateTime" />
+		<propertyMapping jpath=".arrival.actual" property="ArrATADateTime" />
+
+		<propertyMapping jpath=".departure.airport.iataCode" property="DepRoute" />
+		<propertyMapping jpath=".departure.airport.cityText" property="DepRouteCity" />
+		<propertyMapping jpath=".departure.events.AOBT" property="AOBT" />
+		<propertyMapping jpath=".departure.events.ATOT" property="ATOT" />
+		<propertyMapping jpath=".departure.events.EOBT" property="EOBT" />
+		<propertyMapping jpath=".departure.checkIn" property="DepCheckIn" />
+		<propertyMapping jpath=".departure.gate" property="DepGate" />
+		<propertyMapping jpath=".departure.statusText" property="DepStatus" />
+		<propertyMapping jpath=".departure.terminal" property="DepTerminal" />
+		<propertyMapping jpath=".departure.scheduled" property="DepSTODateTime" />
+		<propertyMapping jpath=".departure.estimated" property="DepETDDateTime" />
+		<propertyMapping jpath=".departure.actual" property="DepATDDateTime" />
+	</propertyMappings>
+
+	<!--
+	   Define the terminals available at the airport.
+	   The name will be used in the dropdown list.
+	   The identifier is the terminal identifier in the data from FLIFO
+	-->
+	<terminals>
+		<terminal name="Terminal 1" identifier="1" />
+		<terminal name="Terminal 2" identifier="2" />
+		<terminal name="Terminal 3" identifier="3" />
+		<terminal name="Terminal 4" identifier="4" />
+		<terminal name="Terminal 5" identifier="5" />
+	</terminals>
+
+	<!--
+	A view defines the different display options for users.
+
+	Each view is based on a type of flights. Options are "arrival", "departure" or "combo"
+	The name defines how the view is shown in the dropdown list
+	The identifier is unique tag that allows the view to be specified in a URL  e.g. https://flifostafffids.airport.com/arr
+
+	The <field> elements define what data elements will be shown and in which order
+	-->
+	<views>
+		<view name ="Arrivals &amp; Departures" identifier="arrdep" enabled="True" type="combo">
+			<field>CodeShares</field>
+			<field>Kind</field>
+			<field>Route</field>
+			<field>Status</field>
+			<field>CheckIn</field>
+			<field>Reclaim</field>
+			<field>Gate</field>
+			<field>AircraftRegistration</field>
+			<field>AircraftTypeCode</field>
+			<field>ETD</field>
+			<field>ATD</field>
+			<field>ETA</field>
+			<field>ATA</field>
+			<field>ServiceType</field>
+		</view>
+		<view name ="Arrivals" identifier="arr"  enabled="True" type="arrival">
+			<field>CodeShares</field>
+			<field>DepRoute</field>
+			<field>ArrStatus</field>
+			<field>ArrGate</field>
+			<field>ArrCarousel</field>
+			<field>AircraftRegistration</field>
+			<field>AircraftTypeCode</field>
+			<field>ArrETAShort</field>
+			<field>ArrATAShort</field>
+			<field>ServiceType</field>
+		</view>
+		<view name ="Arrivals - Summary" identifier="arrsummary"  enabled="True" type="arrival">
+			<!--<field>CodeShares</field>-->
+			<field>DepRoute</field>
+			<field>ArrStatus</field>
+			<field>ArrGate</field>
+			<!--<field>ArrCarousel</field> -->
+			<!--<field>AircraftRegistration</field> -->
+			<!--<field>AircraftTypeCode</field> -->
+			<field>ArrETAShort</field>
+			<field>ArrATAShort</field>
+			<!--<field>ServiceType</field> -->
+		</view>
+		<view name ="Departures" identifier="dep" enabled="True" type="departure">
+			<field>CodeShares</field>
+			<field>ArrRoute</field>
+			<field>DepStatus</field>
+			<field>DepCheckIn</field>
+			<field>DepGate</field>
+			<field>AircraftRegistration</field>
+			<field>AircraftTypeCode</field>
+			<field>DepETDShort</field>
+			<field>DepATDShort</field>
+			<field>ServiceType</field>
+		</view>
+	</views>
+
+	<!--
+	RollOff Rules - defines when a flight wil NO Longer be displayed
+
+	kind - arrival or departure
+	status - the current status of the flight
+	rollofftime - the time in minutes after the "reference" time that the flight will no longer be displayed
+	reference - the opertational time the rolloff rules refers to. Available  ATD, ATA and STO
+
+	The rules are "OR"ed together.
+
+	For example:
+
+    <rolloffrule kind="departure" status="In Air" rollofftime="5" reference="ATD" />
+
+	In the above, a departure flight whose status in "In Air" will be rolled off 5 minutes after ATD
+
+	status="*" will match any status
+
+	-->
+	<rolloffrules>
+		<rolloffrule kind="departure" status="In Air" rollofftime="5" reference="ATD" />
+		<rolloffrule kind="departure" status="Cancelled" rollofftime="25"  reference="STO" />
+		<rolloffrule kind="departure" status="Arrived" rollofftime="10"  reference="ATA" />
+		<rolloffrule kind="departure" status="Landed" rollofftime="5"  reference="ATD" />
+		<rolloffrule kind="departure" status="Departed" rollofftime="10"  reference="ATD" />
+		<rolloffrule kind="arrival" status="Cancelled" rollofftime="25"  reference="STO" />
+		<rolloffrule kind="arrival" status="Scheduled" rollofftime="25"  reference="STO" />
+		<rolloffrule kind="arrival" status="Delayed" rollofftime="720"  reference="STO" />
+		<rolloffrule kind="arrival"  status="Landed" rollofftime="60"  reference="ATA" />
+		<rolloffrule kind="arrival"  status="Arrived" rollofftime="60"  reference="ATA" />
+		<rolloffrule kind="arrival"  status="Arrived" rollofftime="1440"  reference="STO" />
+		<rolloffrule kind="arrival"  status="Delayed" rollofftime="1440"  reference="STO" />
+		<!--		<rolloffrule kind="arrival"  status="*" rollofftime="1440"  reference="STO" /> -->
+		<rolloffrule kind="arrival"  status="In Air" rollofftime="1440"  reference="STO" />
+	</rolloffrules>
+</config>

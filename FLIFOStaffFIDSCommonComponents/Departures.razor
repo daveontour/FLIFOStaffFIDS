@@ -1,0 +1,112 @@
+﻿@using FLIFOStaffFIDSCommon;
+@using Radzen.Blazor;
+@using Radzen;
+@inject IClientStateController stateController;
+@inherits GridBase;
+
+
+<PageTitle>Departures</PageTitle>
+@if (!stateController.StateControllerReady())
+{
+    <span>Loading</span>
+}
+else
+{
+    <div class="departures">
+    <RadzenDataGrid IsLoading="@isLoading" Data="@flights" Count="@count" Style="height:calc(100vh - 50px)" AllowFiltering="true" AllowColumnResize="true" FilterMode="FilterMode.Advanced" AllowSorting="true" PageSize=@RowsPerPage AllowPaging="true" PagerHorizontalAlign="HorizontalAlign.Left" ShowPagingSummary="true"
+                LogicalFilterOperator="LogicalFilterOperator.Or" TItem="Flight" ColumnWidth="300px">
+            <Columns>
+                <RadzenDataGridColumn TItem="Flight" Property="SchedDate" Title="Time" Frozen="true" Width="130px">
+                    <Template>
+                        @context.SchedDate @context.SchedTimeShort
+                    </Template>
+                </RadzenDataGridColumn>
+                @if (MultiTerminal)
+                {
+                    <RadzenDataGridColumn TItem="Flight" Property="DepTerminal" Title="Term." Frozen="true" Width="80px" />
+                }
+                <RadzenDataGridColumn TItem="Flight" Property="FlightNumber" Title="Flt Nbr" Frozen="true" Width="100px">
+                    <Template>
+                        @context.OpAirlineCode @context.FlightNumber
+                    </Template>
+                </RadzenDataGridColumn>
+                @foreach (string f in View.Fields)
+                {
+                    switch (f)
+                    {
+                        case "CodeShares":
+                            <RadzenDataGridColumn TItem="Flight" Property="CodeShares" Title="Code Share" Frozen="true" Width="140px" />
+                            break;
+                        case "ArrRoute":
+                            <RadzenDataGridColumn TItem="Flight" Property="ArrRoute" Title="To" Frozen="true" Width="150px">
+                                <Template>
+                                    @context.ArrRouteCity - @context.ArrRoute
+                                </Template>
+                            </RadzenDataGridColumn>
+                            break;
+                        case "DepStatus":
+                            <RadzenDataGridColumn TItem="Flight" Property="DepStatus" Title="Status" Frozen="true" Width="140px" />
+                            break;
+                        case "DepCheckIn":
+                            <RadzenDataGridColumn TItem="Flight" Property="DepCheckIn" Title="CheckIn" Frozen="true" Width="100px" />
+                            break;
+                        case "DepGate":
+                            <RadzenDataGridColumn TItem="Flight" Property="DepGate" Title="Stand" Frozen="true" Width="90px" />
+                            break;
+                        case "AircraftRegistration":
+                            <RadzenDataGridColumn TItem="Flight" Property="AircraftRegistration" Title="A/C Rego" Frozen="true" Width="100px" />
+                            break;
+                        case "AircraftTypeCode":
+                            <RadzenDataGridColumn TItem="Flight" Property="AircraftTypeCode" Title="A/C Type" Frozen="true" Width="90px" />
+                            break;
+                        case "DepETDShort":
+                            <RadzenDataGridColumn TItem="Flight" Property="DepETDShort" Title="ETD" Frozen="true" Width="70px" />
+                            break;
+                        case "DepATDShort":
+                            <RadzenDataGridColumn TItem="Flight" Property="DepATDShort" Title="ATD" Frozen="true" Width="70px" />
+                            break;
+                        case "ServiceType":
+                            <RadzenDataGridColumn TItem="Flight" Property="ServiceType" Title="Svc Type" Frozen="true" Width="90px" />
+                            break;
+                        case "ExtField1":
+                            <RadzenDataGridColumn TItem="Flight" Property="ExtField1" Title="ExtField1" Frozen="true" Width="140px" />
+                            break;
+                        case "ExtField2":
+                            <RadzenDataGridColumn TItem="Flight" Property="ExtField2" Title="ExtField2" Frozen="true" Width="140px" />
+                            break;
+                        case "ExtField3":
+                            <RadzenDataGridColumn TItem="Flight" Property="ExtField3" Title="ExtField3" Frozen="true" Width="140px" />
+                            break;
+                        case "ExtField4":
+                            <RadzenDataGridColumn TItem="Flight" Property="ExtField4" Title="ExtField4" Frozen="true" Width="140px" />
+                            break;
+                        case "ExtField5":
+                            <RadzenDataGridColumn TItem="Flight" Property="ExtField5" Title="ExtField5" Frozen="true" Width="140px" />
+                            break;
+                        case "ExtField6":
+                            <RadzenDataGridColumn TItem="Flight" Property="ExtField6" Title="ExtField6" Frozen="true" Width="140px" />
+                            break;
+                        case "ExtField7":
+                            <RadzenDataGridColumn TItem="Flight" Property="ExtField7" Title="ExtField7" Frozen="true" Width="140px" />
+                            break;
+                        case "ExtField8":
+                            <RadzenDataGridColumn TItem="Flight" Property="ExtField8" Title="ExtField8" Frozen="true" Width="140px" />
+                            break;
+                        case "ExtField9":
+                            <RadzenDataGridColumn TItem="Flight" Property="ExtField9" Title="ExtField9" Frozen="true" Width="140px" />
+                            break;
+                    }
+                }
+            </Columns>
+        </RadzenDataGrid>
+    </div>
+}
+@code {
+    public async Task LoadData()
+    {
+        isLoading = true;
+        flights = await stateController.GetDepFlights();
+        count = flights.Count();
+        isLoading = false;
+    }
+}

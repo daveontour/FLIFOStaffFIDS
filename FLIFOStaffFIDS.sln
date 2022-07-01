@@ -1,0 +1,55 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.1.32407.343
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FLIFOStaffFIDSBlazorWASMApp.Server", "FLIFOStaffFIDSBlazorWASMApp\Server\FLIFOStaffFIDSBlazorWASMApp.Server.csproj", "{5FA9F7F4-17C0-4CC7-B8BA-7FC8EF738BE9}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FLIFOStaffFIDSBlazorWASMApp.Client", "FLIFOStaffFIDSBlazorWASMApp\Client\FLIFOStaffFIDSBlazorWASMApp.Client.csproj", "{24769B57-30FD-4DD1-BEE4-C6468A7FC243}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FLIFOStaffFIDSBlazorWASMApp.Shared", "FLIFOStaffFIDSBlazorWASMApp\Shared\FLIFOStaffFIDSBlazorWASMApp.Shared.csproj", "{4B5B71FB-413E-46CC-9C7C-BB170417A632}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FLIFOStaffFIDSBlazorServerApp", "FLIFOStaffFIDSBlazorServerApp\FLIFOStaffFIDSBlazorServerApp.csproj", "{46B83A7A-6224-42DE-A8F8-B3EB6201387F}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FLIFOStaffFIDSCommon", "FLIFOStaffFIDSCommon\FLIFOStaffFIDSCommon.csproj", "{1DF967D4-812D-4761-B24B-2459E42AD55D}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FLIFOStaffFIDSCommonComponents", "FLIFOStaffFIDSCommonComponents\FLIFOStaffFIDSCommonComponents.csproj", "{C072A8C0-3081-4037-8730-0D36177305E9}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{5FA9F7F4-17C0-4CC7-B8BA-7FC8EF738BE9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5FA9F7F4-17C0-4CC7-B8BA-7FC8EF738BE9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5FA9F7F4-17C0-4CC7-B8BA-7FC8EF738BE9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5FA9F7F4-17C0-4CC7-B8BA-7FC8EF738BE9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{24769B57-30FD-4DD1-BEE4-C6468A7FC243}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{24769B57-30FD-4DD1-BEE4-C6468A7FC243}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{24769B57-30FD-4DD1-BEE4-C6468A7FC243}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{24769B57-30FD-4DD1-BEE4-C6468A7FC243}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4B5B71FB-413E-46CC-9C7C-BB170417A632}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4B5B71FB-413E-46CC-9C7C-BB170417A632}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4B5B71FB-413E-46CC-9C7C-BB170417A632}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4B5B71FB-413E-46CC-9C7C-BB170417A632}.Release|Any CPU.Build.0 = Release|Any CPU
+		{46B83A7A-6224-42DE-A8F8-B3EB6201387F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{46B83A7A-6224-42DE-A8F8-B3EB6201387F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{46B83A7A-6224-42DE-A8F8-B3EB6201387F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{46B83A7A-6224-42DE-A8F8-B3EB6201387F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1DF967D4-812D-4761-B24B-2459E42AD55D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1DF967D4-812D-4761-B24B-2459E42AD55D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1DF967D4-812D-4761-B24B-2459E42AD55D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1DF967D4-812D-4761-B24B-2459E42AD55D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C072A8C0-3081-4037-8730-0D36177305E9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C072A8C0-3081-4037-8730-0D36177305E9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C072A8C0-3081-4037-8730-0D36177305E9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C072A8C0-3081-4037-8730-0D36177305E9}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {C564A44D-4D3E-4B27-BA04-0B6F093E9E08}
+	EndGlobalSection
+EndGlobal

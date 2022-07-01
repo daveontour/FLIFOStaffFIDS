@@ -1,0 +1,30 @@
+﻿@inject IClientStateController stateController;
+
+@implements IDisposable;
+
+<label style="font-size:10pt;margin-top:-7px">@LastUpdated</label>
+
+@code {
+    protected override void OnInitialized()
+    {
+        stateController.OnFlightsUpdated += FlightsUpdated;
+    }
+
+    public string LastUpdated
+    {
+        get
+        {
+            return $"Last Update {stateController.LastUpdated.ToString("HH:mm:ss")}";
+        }
+    }
+    public async void FlightsUpdated()
+    {
+        await InvokeAsync(() =>  {
+            StateHasChanged();
+        });
+    }
+    public void Dispose()
+    {
+        stateController.OnFlightsUpdated -= FlightsUpdated;
+    }
+}
