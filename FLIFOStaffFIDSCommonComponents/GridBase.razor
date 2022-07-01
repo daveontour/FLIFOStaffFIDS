@@ -34,6 +34,8 @@
         if (firstRender)
         {
             await LoadData();
+            stateController.LastUpdated = DateTime.Now;
+            stateController.NotifyNoUpdateFlights(); //Just a kludge to update the LastUpdated Component
         }
         stateController.OnPagerLengthChange += SetPagerTask;
     }
