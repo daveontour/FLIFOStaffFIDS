@@ -32,7 +32,9 @@ else
                 <RadzenDropDown Style="width:180px;height:30px;font-size:12pt;margin-right:5px;margin-top:10px" TValue="string" Placeholder="Select Terminal..." Data=@Terminals TextProperty="Name" ValueProperty="Identifier" Value=@SelectedTerminal Change=@(args => OnTerminalDropDownChange(args)) />
                 <RadzenNumeric Style="width:60px;height:30px;line-height:30px;font-size:12pt;;margin-top:10px;margin-right:5px" Min="5" Max="50" @bind-Value=@RowPerPage Change="(int args) => PageChanged()" />
                 <label style="height:50px;line-height:50px;font-size:12pt;margin-right:2px">Rows per Page:</label>
-                <RadzenCheckBox Style="height:30px;width:30px;line-height:50px;margin-right:5px;margin-top:10px" Change="(bool args) => RuleChanged()" />
+                 <RadzenNumeric Style="width:60px;height:30px;line-height:30px;font-size:12pt;;margin-top:10px;margin-right:5px" Min="0" Max="5" @bind-Value=@stateController.PagerLength Change="(int args) => PagerLengthChanged()" />
+                <label style="height:50px;line-height:50px;font-size:12pt;margin-right:2px">Auto Page:</label>
+                <RadzenCheckBox Style="height:30px;width:30px;line-height:50px;margin-right:5px;margin-top:10px" @bind-Value=stateController.ApplyRollOffRules Change="(bool args) => RuleChanged()" />
                 <label style="height:50px;line-height:50px;font-size:12pt;margin-right:5px">Apply Rolloff Rules</label>
 
             </div>
@@ -119,14 +121,17 @@ else
     }
 
 
-    public async void RuleChanged()
+    public void RuleChanged()
     {
-        //await stateController.GetFlights();
         stateController.NotifyUpdateFlights();
     }
     public void PageChanged()
     {
-        StateHasChanged();
+        stateController.NotifyPageChange();
+    }
+    public void PagerLengthChanged()
+    {
+        stateController.NotifyPagerLengthChange();
     }
     public string GetViewName()
     {

@@ -1,6 +1,7 @@
 ﻿@using FLIFOStaffFIDSCommon;
 @using Radzen.Blazor;
 @using Radzen;
+@using System.Timers;
 @inject IClientStateController stateController;
 @inherits GridBase;
 @implements IDisposable;
@@ -13,7 +14,7 @@
 else
 {
 
-    <RadzenDataGrid IsLoading="@isLoading" Data="@flights" Count="@count" Style="height:calc(100vh - 50px)" AllowFiltering="true" AllowColumnResize="true" FilterMode="FilterMode.Advanced" AllowSorting="true" PageSize=@RowsPerPage AllowPaging="true" PagerHorizontalAlign="HorizontalAlign.Left" ShowPagingSummary="true"
+    <RadzenDataGrid @ref=dataGrid IsLoading="@isLoading" Data="@flights" Count="@count" Style="height:calc(100vh - 50px)" AllowFiltering="true" AllowColumnResize="true" FilterMode="FilterMode.Advanced" AllowSorting="true" PageSize=@RowsPerPage AllowPaging="true" PagerHorizontalAlign="HorizontalAlign.Left" ShowPagingSummary="true"
                 LogicalFilterOperator="LogicalFilterOperator.Or" TItem="Flight" ColumnWidth="300px">
         <Columns>
             <RadzenDataGridColumn TItem="Flight" Property="SchedDate" Title="Time" Frozen="true" Width="130px">
@@ -103,16 +104,36 @@ else
 
 @code {
 
-
     protected override void OnInitialized()
     {
         stateController.OnFlightsUpdated += UpdateGrid;
+        stateController.OnPageChange += PageChange;
         stateController.OnTerminalUpdated += UpdateTerminal;
+        SetPagerTask();
+    }
+
+    private void SetPagerTask(int p)
+    {
+        System.Timers.Timer initTimer = new System.Timers.Timer
+            {
+                Interval = 5 * 1000,
+                AutoReset = true,
+                Enabled = true
+            };
+        initTimer.Elapsed += ChangePage;
+    }
+    public void ChangePage(object sender, ElapsedEventArgs e)
+    {
+        showPage = (showPage + 1) % 5;
+        dataGrid.GoToPage(showPage);
     }
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        base.OnAfterRender(firstRender);
-        await LoadData();
+        if (firstRender)
+        {
+            await LoadData();
+        }
+        stateController.OnPagerLengthChange += SetPagerTask;
     }
     public async void UpdateGrid()
     {
@@ -122,12 +143,33 @@ else
     {
         await LoadData();
     }
+
+
     public void Dispose()
     {
         stateController.OnFlightsUpdated -= UpdateGrid;
         stateController.OnTerminalUpdated -= UpdateTerminal;
+        stateController.OnPageChange -= PageChange;
+        stateController.OnPagerLengthChange -= SetPagerTask;
+        if(pageTimer != null)
+        {
+            pageTimer.Enabled = false;
+        }
     }
 
+    async Task TenthPage()
+    {
+        await dataGrid.GoToPage(9);
+    }
+
+    public async void PageChange()
+    {
+        await InvokeAsync(() =>
+    {
+
+        StateHasChanged();
+    });
+    }
     public async Task LoadData()
     {
         isLoading = true;
@@ -137,7 +179,7 @@ else
 
         await InvokeAsync(() =>
         {
-        StateHasChanged();
+            StateHasChanged();
         });
 
     }

@@ -1,0 +1,56 @@
+﻿.rz-paginator {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background-color: #5d717b;
+    padding: 0.625rem;
+}
+
+.rz-data-grid-data {
+    overflow: auto;
+    flex: 1;
+    box-shadow: none;
+}
+
+.rz-paginator-first,
+.rz-paginator-prev {
+    background-color: #88989b;
+    color: #ffffff;
+}
+
+.rz-paginator-last,
+.rz-paginator-next {
+    background-color: #479cc8;
+    color: #ffffff;
+}
+
+div.departures .rz-grid-table-fixed .rz-frozen-cell {
+    position: -webkit-sticky;
+    position: sticky;
+    background: #2f3d43;
+    border-right: 1px solid #45565d !important;
+    z-index: 1;
+}
+
+div.combo .rz-grid-table-fixed .rz-frozen-cell {
+    position: -webkit-sticky;
+    position: sticky;
+    background: #2f3d43;
+    border-right: 1px solid #45565d !important;
+    z-index: 1;
+}
+
+.rz-data-grid-data {
+    overflow: auto;
+    flex: 1;
+    box-shadow: none;
+    background-color: unset;
+}
+
+.rz-grid-table-fixed .rz-frozen-cell {
+    position: -webkit-sticky;
+    position: sticky;
+    background: #2f3d43;
+    border-right: 1px solid #45565d !important;
+    z-index: 1;
+}

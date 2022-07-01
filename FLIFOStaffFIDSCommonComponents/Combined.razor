@@ -13,8 +13,8 @@
 else
 {
     <div class="combo">
-    <RadzenDataGrid IsLoading="@isLoading" Data="@flights" Count="@count" Style="height:calc(100vh - 50px)" AllowFiltering="true" AllowColumnResize="true" FilterMode="FilterMode.Advanced" AllowSorting="true" PageSize=@RowsPerPage AllowPaging="true" PagerHorizontalAlign="HorizontalAlign.Left" ShowPagingSummary="true"
-                LogicalFilterOperator="LogicalFilterOperator.Or" TItem="Flight" ColumnWidth="300px">
+        <RadzenDataGrid  @ref=dataGrid IsLoading="@isLoading" Data="@flights" Count="@count" Style="height:calc(100vh - 50px)" AllowFiltering="true" AllowColumnResize="true" FilterMode="FilterMode.Advanced" AllowSorting="true" PageSize=@RowsPerPage AllowPaging="true" PagerHorizontalAlign="HorizontalAlign.Left" ShowPagingSummary="true"
+                    LogicalFilterOperator="LogicalFilterOperator.Or" TItem="Flight" ColumnWidth="300px">
             <Columns>
                 <RadzenDataGridColumn TItem="Flight" Property="SchedDate" Title="Time" Frozen="true" Width="130px">
                     <Template>
@@ -117,12 +117,17 @@ else
     protected override void OnInitialized()
     {
         stateController.OnFlightsUpdated += UpdateGrid;
+        stateController.OnPageChange += PageChange;
         stateController.OnTerminalUpdated += UpdateTerminal;
+        SetPagerTask();
     }
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        base.OnAfterRender(firstRender);
-        await LoadData();
+        if (firstRender)
+        {
+         await LoadData();           
+        }
+         stateController.OnPagerLengthChange += SetPagerTask;
     }
     public async void UpdateGrid()
     {
@@ -136,8 +141,19 @@ else
     {
         stateController.OnFlightsUpdated -= UpdateGrid;
         stateController.OnTerminalUpdated -= UpdateTerminal;
+        stateController.OnPageChange -= PageChange;
+                if(pageTimer != null)
+        {
+            pageTimer.Enabled = false;
+        }
     }
-
+    public async void PageChange()
+    {
+        await InvokeAsync(() =>
+        {
+            StateHasChanged();
+        });
+    }
     public async Task LoadData()
     {
         isLoading = true;
@@ -147,7 +163,7 @@ else
 
         await InvokeAsync(() =>
         {
-        StateHasChanged();
+            StateHasChanged();
         });
 
     }

@@ -1,8 +1,8 @@
-﻿
-@using FLIFOStaffFIDSCommon
+﻿@using FLIFOStaffFIDSCommon
 @using Radzen.Blazor;
 @using Radzen;
 @using System.Linq;
+@using System.Timers;
 @inject IClientStateController stateController;
 
 @code {
@@ -15,10 +15,42 @@
     [Parameter]
     public int RowsPerPage { get; set; } = 20;
 
+    public RadzenDataGrid<Flight> dataGrid;
+    protected System.Timers.Timer pageTimer;
+
+    public int showPage = 0;
     public bool isLoading { get; set; }
     public int count { get; set; }
     public IEnumerable<Flight> flights { get; set; } = new List<Flight>();
 
-
+    public void SetPagerTask()
+    {
+        if (stateController.PagerLength > 1)
+        {
+            if (pageTimer is not null)
+            {
+                pageTimer.Enabled = false;
+            }
+            pageTimer = new System.Timers.Timer
+                {
+                    Interval = 5 * 1000,
+                    AutoReset = true,
+                    Enabled = true
+                };
+            pageTimer.Elapsed += ChangePage;
+        }
+        else
+        {
+            if (pageTimer is not null)
+            {
+                pageTimer.Enabled = false;
+            }
+        }
+    }
+    public void ChangePage(object sender, ElapsedEventArgs e)
+    {
+        showPage = (showPage + 1) % stateController.PagerLength;
+        dataGrid.GoToPage(showPage);
+    }
 
 }

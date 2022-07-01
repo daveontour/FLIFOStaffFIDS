@@ -24,8 +24,9 @@ public class ServerAppStateController : IClientStateController
 
     private DateTime _lastUpdate;
     public DateTime LastUpdated { get => _lastUpdate; set => _lastUpdate = value; }
-    public string SelectedTerminal { get; set; }
-    public bool ApplyRollOffRules { get => false; set => throw new NotImplementedException(); }
+    public string SelectedTerminal { get; set; } = "all";
+    public bool ApplyRollOffRules { get; set; } = true;
+    public int PagerLength { get; set; } = 1;
 
     public event Action? OnFlightsUpdated;
 
@@ -33,19 +34,44 @@ public class ServerAppStateController : IClientStateController
 
     public event Action? OnRulesUpdated;
 
-    public Task<List<Flight>> GetAllFlights(bool applyRolloff = true)
+    public event Action? OnPageChange;
+
+    public event Action? OnPagerLengthChange;
+
+    public Task<List<Flight>> GetAllFlights(bool applyRolloff = true, string terminal = "all")
     {
-        return Task.FromResult(ApplyRules(dao.GetFlights().ToList()));
+        if (SelectedTerminal == "all")
+        {
+            return Task.FromResult(ApplyRules(dao.GetFlights().OrderBy(f => f.STODateTime).ToList()));
+        }
+        else
+        {
+            return Task.FromResult(ApplyRules(dao.GetFlights().Where<Flight>(f => f.Terminal == SelectedTerminal).OrderBy(f => f.STODateTime).ToList()));
+        }
     }
 
-    public Task<List<Flight>> GetArrFlights(bool applyRolloff = true)
+    public Task<List<Flight>> GetArrFlights(bool applyRolloff = true, string terminal = "all")
     {
-        return Task.FromResult(ApplyRules(dao.GetFlights().Where<Flight>(f => f.IsArrival).ToList()));
+        if (SelectedTerminal == "all")
+        {
+            return Task.FromResult(ApplyRules(dao.GetFlights().OrderBy(f => f.STODateTime).ToList()));
+        }
+        else
+        {
+            return Task.FromResult(ApplyRules(dao.GetFlights().Where<Flight>(f => f.Terminal == SelectedTerminal && f.IsArrival).OrderBy(f => f.STODateTime).ToList()));
+        }
     }
 
-    public Task<List<Flight>> GetDepFlights(bool applyRolloff = true)
+    public Task<List<Flight>> GetDepFlights(bool applyRolloff = true, string terminal = "all")
     {
-        return Task.FromResult(ApplyRules(dao.GetFlights().Where<Flight>(f => !f.IsArrival).ToList()));
+        if (SelectedTerminal == "all")
+        {
+            return Task.FromResult(ApplyRules(dao.GetFlights().OrderBy(f => f.STODateTime).ToList()));
+        }
+        else
+        {
+            return Task.FromResult(ApplyRules(dao.GetFlights().Where<Flight>(f => f.Terminal == SelectedTerminal && !f.IsArrival).OrderBy(f => f.STODateTime).ToList()));
+        }
     }
 
     public Task<MetaData> GetMetaData()
@@ -144,6 +170,16 @@ public class ServerAppStateController : IClientStateController
     public void NotifyUpdateTerminal()
     {
         OnTerminalUpdated?.Invoke();
+    }
+
+    public void NotifyPageChange()
+    {
+        OnPageChange?.Invoke();
+    }
+
+    public void NotifyPagerLengthChange()
+    {
+        OnPagerLengthChange?.Invoke();
     }
 
     public bool StateControllerReady()

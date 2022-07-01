@@ -14,13 +14,13 @@
 	<EnableUpdates>True</EnableUpdates>
 
 	<!-- The time in seconds between UPDATE API calls to FLIFO -->
-	<UpdateInterval>30</UpdateInterval>
+	<UpdateInterval>120</UpdateInterval>
 
 	<!-- The time in MINUTES between LOAD API calls to FLIFO -->
 	<LoadInterval>60</LoadInterval>
 
 	<!-- Use Test Data instad of the API -->
-	<Test>True</Test>
+	<Test>False</Test>
 	<TestDepartures>TestData\lhrd.json</TestDepartures>
 	<TestArrivals>TestData\lhra.json</TestArrivals>
 	<TestDeparturesUpdates>TestData\lhrdUpdates.json</TestDeparturesUpdates>
