@@ -4,6 +4,7 @@
 @using Radzen;
 @using System.Linq;
 @using FLIFOStaffFIDSCommonComponents;
+@inject IJSRuntime JS
 
 
 @inject IClientStateController stateController;
@@ -20,10 +21,13 @@
 }
 else
 {
+
+
+
     <div style="height:100vh;display:grid;grid-template-rows:50px auto;">
         <div style="justify-content:space-between;width:100%;display:flex;">
             <div style="height:50px;display:flex;flex-direction:row;margin-left:5px;">
-                <div style="display:inline-flex;flex-direction:column;margin-right:15px;">
+                <div style="display:inline-flex;flex-direction:column;margin-right:15px;cursor:pointer;" @onclick=ShowMenu>
                     <h2 style="margin-right:25px">@GlobalMetaData.AirportName</h2>
                     <LastUpdateComponent />
                 </div>
@@ -42,13 +46,6 @@ else
                 {
                     <RadzenDropDown Style="width:180px;height:30px;font-size:12pt;margin-right:5px;margin-top:10px" TValue="string" Placeholder="Select Terminal..." Data=@Terminals TextProperty="Name" ValueProperty="Identifier" Value=@SelectedTerminal Change=@(args => OnTerminalDropDownChange(args)) />
                 }
-                <RadzenNumeric Style="width:60px;height:30px;line-height:30px;font-size:12pt;;margin-top:10px;margin-right:5px" Min="5" Max="50" @bind-Value=@RowPerPage Change="(int args) => PageChanged()" />
-                <label style="height:50px;line-height:50px;font-size:12pt;margin-right:2px">Rows per Page:</label>
-                <RadzenNumeric Style="width:60px;height:30px;line-height:30px;font-size:12pt;;margin-top:10px;margin-right:5px" Min="0" Max="5" @bind-Value=@stateController.PagerLength Change="(int args) => PagerLengthChanged()" />
-                <label style="height:50px;line-height:50px;font-size:12pt;margin-right:2px">Auto Page:</label>
-                <RadzenCheckBox Style="height:30px;width:30px;line-height:50px;margin-right:5px;margin-top:10px" @bind-Value=stateController.ApplyRollOffRules Change="(bool args) => RuleChanged()" />
-                <label style="height:50px;line-height:50px;font-size:12pt;margin-right:5px">Apply Rolloff Rules</label>
-
             </div>
         </div>
         <div style="grid-row:2;height:calc(100vh - 50px)">
@@ -66,7 +63,23 @@ else
             }
         </div>
     </div>
+
 }
+
+<div id="mySidenav" class="sidenav">
+    <a class="closebtn" @onclick=CloseMenu>&times;</a>
+    <div style="display:grid;grid-template-columns:auto 100px;line-height:50px;">
+        <label style="height:50px;line-height:50px;font-size:12pt;margin-right:2px">Rows per Page:</label>
+        <RadzenNumeric Style="width:60px;height:30px;line-height:30px;font-size:12pt;;margin-top:10px;margin-right:5px" Min="5" Max="50" @bind-Value=@RowPerPage Change="(int args) => PageChanged()" />
+        <label style="height:50px;line-height:50px;font-size:12pt;margin-right:2px">Auto Page:</label>
+        <RadzenNumeric Style="width:60px;height:30px;line-height:30px;font-size:12pt;;margin-top:10px;margin-right:5px" Min="0" Max="5" @bind-Value=@stateController.PagerLength Change="(int args) => PagerLengthChanged()" />
+        <div style="padding:5px;grid-column-start:1;grid-column-end:3;line-height:20px;margin-bottom:10px">Auto Page sets the number of pages that will automatically be scrolled through on a timer.  Set to 1 to disable auto paging</div>
+        <label style="height:50px;line-height:50px;font-size:12pt;margin-right:5px">Apply Rolloff Rules</label>
+        <RadzenCheckBox Style="height:30px;width:30px;line-height:50px;margin-right:5px;margin-top:10px" @bind-Value=stateController.ApplyRollOffRules Change="(bool args) => RuleChanged()" />
+        <div style="padding:5px;grid-column-start:1;grid-column-end:3;line-height:20px">Uncheck Rolloff Rules to see all flights availalbe without applying roll off rules</div>
+
+    </div>
+</div>
 
 @code {
     [Parameter]
@@ -153,6 +166,15 @@ else
         GlobalMetaData = await stateController.GetMetaData();
         stateController.ShowTerminal = GlobalMetaData.ShowTerminal;
         await stateController.GetAllFlights();
+    }
+
+    public async Task ShowMenu()
+    {
+        await JS.InvokeVoidAsync("openNav");
+    }
+    public async Task CloseMenu()
+    {
+        await JS.InvokeVoidAsync("closeNav");
     }
     public async void FlightsUpdated()
     {
