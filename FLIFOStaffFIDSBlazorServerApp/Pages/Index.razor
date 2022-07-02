@@ -4,7 +4,8 @@
 @using Radzen;
 @using System.Linq;
 @using FLIFOStaffFIDSCommonComponents;
-@inject IJSRuntime JS
+@inject IJSRuntime JS;
+@inject DialogService dialogService;
 
 
 @inject IClientStateController stateController;
@@ -77,6 +78,7 @@ else
         <label style="height:50px;line-height:50px;font-size:12pt;margin-right:5px">Apply Rolloff Rules</label>
         <RadzenCheckBox Style="height:30px;width:30px;line-height:50px;margin-right:5px;margin-top:10px" @bind-Value=stateController.ApplyRollOffRules Change="(bool args) => RuleChanged()" />
         <div style="padding:5px;grid-column-start:1;grid-column-end:3;line-height:20px">Uncheck Rolloff Rules to see all flights availalbe without applying roll off rules</div>
+   @*     <div style="padding:5px;grid-column-start:1;grid-column-end:3;line-height:20px;margin-top:50px;text-align:center"><RadzenButton Text="Administrator" ButtonStyle="ButtonStyle.Secondary" Click="OpenAdminDialog"/></div> *@
 
     </div>
 </div>
@@ -166,6 +168,10 @@ else
         GlobalMetaData = await stateController.GetMetaData();
         stateController.ShowTerminal = GlobalMetaData.ShowTerminal;
         await stateController.GetAllFlights();
+    }
+    public async Task OpenAdminDialog()
+    {
+         await dialogService.OpenAsync<AdminDialog>("FLIFO Staff FIDS Administrration", null, new DialogOptions() { Width = "900px", Height = "700px", AutoFocusFirstElement = false });
     }
 
     public async Task ShowMenu()

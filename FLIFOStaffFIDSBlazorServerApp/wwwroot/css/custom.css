@@ -87,5 +87,90 @@ div.combo .rz-grid-table-fixed .rz-frozen-cell {
         right: 25px;
         font-size: 36px;
         margin-left: 50px;
-        cursor:pointer;
+        cursor: pointer;
     }
+
+.li-dialog-holder {
+    height: 100%;
+    display: grid;
+    grid-template-rows: auto 60px;
+    grid-template-columns: auto;
+}
+
+.li-editor-holder {
+    display: grid;
+    height: calc(100vh - 65px);
+    grid-template-rows: auto;
+    grid-template-columns: auto;
+    font-size: 10pt;
+}
+
+.li-editor-top {
+    grid-row: 1;
+    overflow-y: auto;
+    padding-top: 5px;
+    padding-left: 5px;
+}
+
+.li-editor-tab-holder {
+    display: grid;
+    height: 100%;
+    grid-template-rows: auto 50px;
+    grid-template-columns: auto;
+    font-size: 10pt;
+}
+
+.li-editor-tab-top {
+    grid-row: 1;
+    overflow-y: auto;
+    padding-top: 5px;
+    padding-left: 5px;
+}
+
+.li-editor-footer {
+    grid-row: 2;
+    width: 100%;
+    display: grid;
+    grid-template-rows: 20px auto;
+    row-gap: 5px
+}
+
+.li-editor-tab-footer {
+    grid-row: 2;
+    width: 100%;
+    display: grid;
+    grid-template-rows: 20px auto;
+    row-gap: 5px
+}
+
+.li-diagram-holder {
+    height: 100%;
+    display: grid;
+    grid-template-rows: auto;
+    grid-template-columns: 720px auto;
+}
+
+.li-execution-holder {
+    height: calc(100vh - 126px);
+    margin-top: 120px;
+    overflow: auto;
+    display: grid;
+    grid-template-rows: auto;
+    grid-template-columns: 415px auto;
+}
+
+.li-dialog-top {
+    grid-row: 1;
+    overflow-y: auto;
+    padding-top: 5px;
+    padding-left: 5px;
+}
+
+.li-dialog-footer {
+    grid-row: 2;
+}
+
+.li-dialog-content {
+    overflow-y: auto;
+    overflow-x: hidden
+}

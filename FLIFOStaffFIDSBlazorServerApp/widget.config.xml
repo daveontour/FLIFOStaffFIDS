@@ -20,7 +20,7 @@
 	<LoadInterval>60</LoadInterval>
 
 	<!-- Use Test Data instad of the API -->
-	<Test>False</Test>
+	<Test>True</Test>
 	<TestDepartures>TestData\lhrd.json</TestDepartures>
 	<TestArrivals>TestData\lhra.json</TestArrivals>
 	<TestDeparturesUpdates>TestData\lhrdNoUpdates.json</TestDeparturesUpdates>

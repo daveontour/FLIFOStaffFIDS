@@ -2,6 +2,8 @@ using FLIFOStaffFIDSBlazorServerApp.Shared.Services;
 using FLIFOStaffFIDSCommon;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Web;
+using Radzen;
+using Radzen.Blazor;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -11,6 +13,7 @@ builder.Services.AddServerSideBlazor();
 builder.Services.AddHostedService<FlightStatusService>();
 builder.Services.AddSingleton<DataAccessService>();
 builder.Services.AddScoped<IClientStateController, ServerAppStateController>();
+builder.Services.AddScoped<DialogService>();
 
 var app = builder.Build();
 

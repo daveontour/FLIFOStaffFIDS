@@ -1,0 +1,51 @@
+﻿@using Radzen;
+@using Radzen.Blazor
+@using FLIFOStaffFIDSCommon;
+@inject IClientStateController stateController;
+@inject DialogService dialogService;
+
+<div class="li-dialog-holder">
+    <div class="li-dialog-top" style="height:550px">
+        <RadzenTabs RenderMode="TabRenderMode.Client" Style="height:100%">
+            <Tabs>
+                <RadzenTabsItem Text="Terminals" Style="height:100%">
+                </RadzenTabsItem>
+                <RadzenTabsItem Text="Views" Style="height:100%">
+                </RadzenTabsItem>
+                <RadzenTabsItem Text="API Statistics" Style="height:100%">
+                </RadzenTabsItem>
+            </Tabs>
+        </RadzenTabs>
+    </div>
+
+    <div class="li-dialog-footer">
+        <div class="float-left" style="display:grid;grid-template-columns:150px auto 150px;width:100%;margin-top:20px">
+            <RadzenButton Text="Save Changes" Click="( () => { dialogService.Close();})" Style="width: 200px;grid-column:1" Disabled=@DataClean />
+            <RadzenButton Text="Close" Click="( () => { dialogService.Close();})" ButtonStyle="ButtonStyle.Secondary" Style="width: 150px;grid-column:3" />
+        </div>
+    </div>
+</div>
+
+@code {
+    private bool DataClean { get; set; } = true;
+
+    RadzenGrid<Terminal> terminalGrid { get; set; }
+
+
+    protected override void OnAfterRender(bool firstRender)
+    {
+        base.OnAfterRender(firstRender);
+        if (firstRender)
+        {
+
+        }
+    }
+
+
+    private void DataChanged()
+    {
+        DataClean = false;
+        StateHasChanged();
+    }
+}
+
