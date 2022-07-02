@@ -27,8 +27,8 @@ else
     <div style="height:100vh;display:grid;grid-template-rows:50px auto;">
         <div style="justify-content:space-between;width:100%;display:flex;">
             <div style="height:50px;display:flex;flex-direction:row;margin-left:5px;">
-                <div style="display:inline-flex;flex-direction:column;margin-right:15px;cursor:pointer;" @onclick=ShowMenu>
-                    <h2 style="margin-right:25px">@GlobalMetaData.AirportName</h2>
+                <div style="display:inline-flex;flex-direction:column;margin-right:75px;cursor:pointer;" @onclick=ShowMenu>
+                    <div style="display:inline-flex;flex-direction:row"><RadzenIcon Icon="menu" /><h2 style="margin-left:10px">@GlobalMetaData.AirportName</h2></div>
                     <LastUpdateComponent />
                 </div>
                 <div style="display:inline-flex;flex-direction:row">
@@ -37,14 +37,14 @@ else
                 </div>
             </div>
 
-            <div style="display:inline-flex;flex-direction:row-reverse;column-gap:5px;line-height:50px;text-align: center;">
+            <div style="display:inline-flex;flex-direction:row;column-gap:5px;line-height:50px;text-align: center;">
                 @if (Views.Count() > 1)
                 {
-                    <RadzenDropDown Style="width:180px;height:30px;font-size:12pt;margin-right:5px;margin-top:10px" TValue="string" Placeholder="Select View..." Data=@Views TextProperty="Name" ValueProperty="Identifier" Value=@SelectedView Change=@(args => OnViewDropDownChange(args)) />
+                    <RadzenDropDown Style="width:200px;height:30px;font-size:12pt;margin-right:5px;margin-top:10px" TValue="string" Placeholder="Select View..." Data=@Views TextProperty="Name" ValueProperty="Identifier" Value=@SelectedView Change=@(args => OnViewDropDownChange(args)) />
                 }
                 @if (MultiTerminal)
                 {
-                    <RadzenDropDown Style="width:180px;height:30px;font-size:12pt;margin-right:5px;margin-top:10px" TValue="string" Placeholder="Select Terminal..." Data=@Terminals TextProperty="Name" ValueProperty="Identifier" Value=@SelectedTerminal Change=@(args => OnTerminalDropDownChange(args)) />
+                    <RadzenDropDown Style="width:200px;height:30px;font-size:12pt;margin-right:5px;margin-top:10px" TValue="string" Placeholder="Select Terminal..." Data=@Terminals TextProperty="Name" ValueProperty="Identifier" Value=@SelectedTerminal Change=@(args => OnTerminalDropDownChange(args)) />
                 }
             </div>
         </div>
